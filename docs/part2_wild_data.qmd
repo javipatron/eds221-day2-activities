@@ -1,0 +1,98 @@
+---
+title: "part2_wild_data"
+format: html
+editor: visual
+
+execute: 
+  message: false
+  warning: false
+---
+
+## download librarys
+
+```{r}
+library(tidyverse)
+library(here)
+library(janitor)
+library(dplyr)
+```
+
+## Read the data
+
+```{r}
+mack_verts <- read_csv(here::here("data","AS00601.csv"))
+head(mack_verts)
+
+```
+
+## Cleaning the Headers 
+
+```{r}
+mack_verts <- mack_verts %>% clean_names
+head(mack_verts)
+
+```
+
+## Playing around the data and storing new values
+
+```{r}
+ mc_wt_5 <- mack_verts$weight[5]
+ mc_wt_5
+ 
+ mc_length_8_20 <- mack_verts$length1[8:21]
+ mc_length_8_20
+ 
+ mc_dates <- mack_verts$sampledate
+ head(mc_dates)
+```
+
+## Make a salamander subset
+
+```{r}
+?filter
+mc_salamanders <- mack_verts %>% filter(species == "DITE")
+mc_salamanders
+
+
+```
+
+## Make a graph
+
+```{r}
+salamander_graph <- ggplot(data = mc_salamanders, aes(x = length1, y = weight)) + 
+  geom_jitter(aes(color = vert_index, alpha = 0.01)) + scale_color_gradient(low = "blue", high = "orange") + 
+  labs(title = "Salamander Length vs. Weight", x = "Snout-Vent Length (mm)", y = "Weight (g)")
+
+salamander_graph
+
+
+```
+
+## Save your graph
+
+```{r}
+ggsave(plot = salamander_graph, here::here("figs","salamander_size.png"))
+```
+
+## Make another Cutthroat
+
+```{r}
+mc_trout <- mack_verts %>% filter(species == "ONCL")
+head(mc_trout)
+
+mc_trout_graph <- ggplot(mc_trout, aes(x =length1, y=weight)) + 
+  geom_jitter(aes(color = reach, alpha = 0.1)) +
+  facet_wrap(~reach) +
+  labs(title = "Title",
+       x= "Length",
+       y= "Weight")
+mc_trout_graph
+```
+
+## Save this graph
+
+```{r}
+ggsave(plot = mc_trout_graph, here::here("figs","cutthroat_size.png"))
+
+
+```
